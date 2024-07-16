@@ -7,11 +7,17 @@ from waypaper.common import get_monitor_names_hyprctl
 from waypaper.translations import Chinese, English, French, German, Polish, Russian
 import re
 
+# I added this so that when the wallpaper changes it symlinks it automatically
+from waypaper.symlink import symlink_wallpaper
+import os
 
 def change_wallpaper(image_path: str, cf: Config, monitor: str, txt: Chinese|English|French|German|Polish|Russian):
     """Run system commands to change the wallpaper depending on the backend"""
 
     try:
+        symlink_path = os.path.expanduser("~/Pictures/curr_wall_paper")
+        symlink_wallpaper(image_path, symlink_path)
+        print(f"Symlink image {image_path} -> {symlink_path}")
         # swaybg backend:
         if cf.backend == "swaybg":
 
