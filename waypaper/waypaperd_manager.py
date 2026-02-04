@@ -1,7 +1,7 @@
 import os.path
 import subprocess
 
-daemon_script = os.path.expanduser("~/Documents/python-scripts/test-daemon-2/daemon.py")
+daemon_script = "waypaper/waypaperd.py"
 search_str = f"python {daemon_script}"
 cycle_length = 60
 
