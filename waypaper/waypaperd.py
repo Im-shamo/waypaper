@@ -4,7 +4,7 @@ THIS IS WORK IN PROGRESS AND NOT USED IN THE PROGRAM YET.
 """
 
 import time
-import os
+import subprocess
 import argparse
 
 def main():
@@ -14,7 +14,8 @@ def main():
 
     try:
         while True:
-            os.system("waypaper --random")
+            command = ["waypaper", "--random"]
+            subprocess.run(command)
             print(f"Command to change wallpaper executed. Waiting {args.interval} seconds.")
             time.sleep(args.interval)
     except KeyboardInterrupt:

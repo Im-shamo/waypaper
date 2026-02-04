@@ -15,6 +15,7 @@ from waypaper.common import get_image_paths, get_image_name, get_random_file, ca
 from waypaper.options import FILL_OPTIONS, SORT_OPTIONS, SORT_DISPLAYS, VIDEO_EXTENSIONS , SWWW_TRANSITION_TYPES, get_monitor_options
 from waypaper.translations import Chinese, English, French, German, Polish, Russian, Belarusian, Spanish
 from waypaper.keybindings import Keys
+from waypaper.waypaperd_manager import check_daemon, launch_daemon, kill_daemon
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, Gdk, GLib
@@ -311,6 +312,12 @@ class App(Gtk.Window):
         self.show_path_in_tooltip_checkbox.set_active(self.cf.show_path_in_tooltip)
         self.show_path_in_tooltip_checkbox.connect("toggled", self.on_show_path_in_tooltip_toggled)
         self.menu.append(self.show_path_in_tooltip_checkbox)
+
+        # Create a toggle for the waypaperd:
+        self.waypaperd_toggle_checkbox = Gtk.CheckMenuItem(label="Start waypaperd")
+        self.waypaperd_toggle_checkbox.set_active(check_daemon())
+        self.waypaperd_toggle_checkbox.connect("toggled", self.on_waypaperd_toggle_checkbox_toggled)
+        self.menu.append(self.waypaperd_toggle_checkbox)
 
         # Create zen mode toggle:
         self.zen_mode_checkbox = Gtk.CheckMenuItem(label=self.txt.msg_zen)
@@ -684,6 +691,15 @@ class App(Gtk.Window):
         """Toggle show image relative path in image tooltip"""
         self.cf.show_path_in_tooltip = not self.cf.show_path_in_tooltip
         threading.Thread(target=self.process_images).start()
+
+
+    def on_waypaperd_toggle_checkbox_toggled(self, widget) -> None:
+        if check_daemon():
+            kill_daemon()
+            print("Killed waypaperd")
+        else:
+            launch_daemon()
+            print("Launched Waypaperd")
 
 
     def on_fill_option_changed(self, combo) -> None:
