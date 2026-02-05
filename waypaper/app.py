@@ -40,7 +40,7 @@ class App(Gtk.Window):
         self.main_box.grab_focus()
         self.keys.fill_keys_from_file(self.cf.keybindings_file)
 
-        self.waypaperd_manager = WaypaperdManager()
+        self.waypaperd_manager = WaypaperdManager(self.cf.waypaperd_cycle_length)
         if self.waypaperd_manager.check():
             print("waypaperd is running")
 

@@ -53,6 +53,9 @@ class Config:
         self.use_post_command = True
         self.show_path_in_tooltip = True
 
+        # Waypaperd
+        self.waypaperd_cycle_length = 60 # in seconds
+
         # Create config and cache folders:
         self.config_dir.mkdir(parents=True, exist_ok=True)
         self.cache_dir.mkdir(parents=True, exist_ok=True)
@@ -108,6 +111,7 @@ class Config:
         self.show_path_in_tooltip = config.getboolean("Settings", "show_path_in_tooltip", fallback=self.show_path_in_tooltip)
         self.style_file = config.get("Settings", "stylesheet", fallback=self.style_file)
         self.keybindings_file = pathlib.Path(config.get("Settings", "keybindings", fallback=self.keybindings_file)).expanduser()
+        self.waypaperd_cycle_length = int(config.get("Settings", "waypaperd_cycle_length", fallback=self.waypaperd_cycle_length))
 
         # Read and convert strings representing lists and paths:
         monitors_str = config.get("Settings", "monitors", fallback=self.selected_monitor, raw=True)
@@ -252,6 +256,7 @@ class Config:
         config.set("Settings", "use_xdg_state", str(self.use_xdg_state))
         config.set("Settings", "stylesheet", str(self.style_file))
         config.set("Settings", "keybindings", self.shorten_path(self.keybindings_file))
+        config.set("Settings", "waypaperd_cycle_length", str(self.waypaperd_cycle_length))
 
         try:
             with open(self.config_file, "w") as configfile:

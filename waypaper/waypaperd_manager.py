@@ -2,10 +2,10 @@ import subprocess
 
 
 class WaypaperdManager:
-    def __init__(self):
+    def __init__(self, cycle_length: int):
         self.daemon_script = "waypaper/waypaperd.py"
         self.command = f"python {self.daemon_script}"
-        self.cycle_length = 60
+        self.cycle_length = cycle_length
 
     def check(self) -> bool:
         """Return True if daemon is running"""
@@ -20,7 +20,7 @@ class WaypaperdManager:
         command = f"{self.command} {self.cycle_length}".split(" ")
         print(f"{command=}")
         if not self.check():
-            subprocess.Popen(command, start_new_session=True)
+            subprocess.Popen(command, start_new_session=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             return True
         else:
             return False
