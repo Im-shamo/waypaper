@@ -15,7 +15,7 @@ from waypaper.common import get_image_paths, get_image_name, get_random_file, ca
 from waypaper.options import FILL_OPTIONS, SORT_OPTIONS, SORT_DISPLAYS, VIDEO_EXTENSIONS , SWWW_TRANSITION_TYPES, get_monitor_options
 from waypaper.translations import Chinese, English, French, German, Polish, Russian, Belarusian, Spanish
 from waypaper.keybindings import Keys
-from waypaper.waypaperd_manager import check_daemon, launch_daemon, kill_daemon
+from waypaper.waypaperd_manager import WaypaperdManager
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, Gdk, GLib
@@ -39,6 +39,10 @@ class App(Gtk.Window):
         self.init_ui()
         self.main_box.grab_focus()
         self.keys.fill_keys_from_file(self.cf.keybindings_file)
+
+        self.waypaperd_manager = WaypaperdManager()
+        if self.waypaperd_manager.check():
+            print("waypaperd is running")
 
         # Start the image processing in a separate thread:
         threading.Thread(target=self.process_images).start()
@@ -315,7 +319,7 @@ class App(Gtk.Window):
 
         # Create a toggle for the waypaperd:
         self.waypaperd_toggle_checkbox = Gtk.CheckMenuItem(label="Start waypaperd")
-        self.waypaperd_toggle_checkbox.set_active(check_daemon())
+        self.waypaperd_toggle_checkbox.set_active(self.waypaperd_manager.check())
         self.waypaperd_toggle_checkbox.connect("toggled", self.on_waypaperd_toggle_checkbox_toggled)
         self.menu.append(self.waypaperd_toggle_checkbox)
 
@@ -694,12 +698,11 @@ class App(Gtk.Window):
 
 
     def on_waypaperd_toggle_checkbox_toggled(self, widget) -> None:
-        if check_daemon():
-            kill_daemon()
+        if self.waypaperd_manager.kill():
             print("Killed waypaperd")
         else:
-            launch_daemon()
-            print("Launched Waypaperd")
+            self.waypaperd_manager.launch()
+            print("Launched waypaperd")
 
 
     def on_fill_option_changed(self, combo) -> None:
